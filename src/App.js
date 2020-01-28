@@ -1,14 +1,13 @@
 import React from 'react';
 import './App.css';
+import backgroundImage from './background-image.jpg'
 import CanvasJSReact from './canvasjs.react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+
 class App extends React.Component {
   constructor(props) {
     super(props);
-    // const [dropdownOpen, setOpen] = useState(false);
 
     this.state = {
       concentration: '',
@@ -30,13 +29,11 @@ class App extends React.Component {
     }; 
   this.myChangeHandler = this.myChangeHandler.bind(this);
   this.mySubmitHandler = this.mySubmitHandler.bind(this);
-  
   }
 
   mySubmitHandler = (event) => {
     event.preventDefault();
     let items = [];
-    console.log(items);
 
     items.push(...Calculation(Number(this.state.concentration), Number(this.state.minSpeed), Number(this.state.maxSpeed), Number(this.state.poise), Number(this.state.temperature),
                               Number(this.state.perfectGasConstant), Number(this.state.kinematicViscosity), Number(this.state.schmidtConst), 
@@ -60,9 +57,7 @@ class App extends React.Component {
       };
 
     });
-    
-    console.log(items);
- 
+     
   };
 
   myChangeHandler = (event) => {
@@ -133,15 +128,7 @@ class App extends React.Component {
       });
     }
   }
-    // document.getElementById('form1').innerHTML = event.target.name;
 
-    // var tolueneExample = document.form1.select.name == "Toluene"
-    // if (tolueneExample){
-
-  //   })
-  // }
-
-  
   renderDropdown(){
     return(
       <ul className="dropdown">
@@ -157,8 +144,8 @@ class App extends React.Component {
            schmidtConst, liquidDensity, molecularWeight, vaporPressure, solventDiffusivity, isVisible} = this.state;
 
     return (
-
-    <div className="grid-container">
+      <div id='cont'>
+    <div className="grid-container" style={{marginLeft: '100px', marginRight:'100px'}} >
 
       <div className="grid-item">
       <form onSubmit={this.mySubmitHandler} className='form-style-9'>
@@ -172,6 +159,7 @@ class App extends React.Component {
 				</select>
 		</p>
 </form>
+    <br></br>
         <ul>
 
           <p>Spin coating initial values</p>
@@ -297,12 +285,14 @@ class App extends React.Component {
       <div className="grid-item">
       {this.state.submit && <Table items={ this.state.items }/>}
       </div>
-      {/* <div className="grid-item"> */}
-      {this.state.submit && <Graph items={this.state.items} />}
-      {/* </div> */}
-
+      <div  style={{gridColumn:'1/-1'}}>
+      {this.state.submit && <Graph items={this.state.items} />}  
       </div>
-        
+
+
+      </div>      
+      </div>
+
   );
   }
 }
@@ -322,7 +312,7 @@ class Table extends React.Component {
           padding: '10px',
           fontFamily: 'arial',
           display: 'block',
-          height: '500px',
+          height: '550px',
           overflowY: 'auto',
           borderSpacing: '60px 0',
           }}>
@@ -381,10 +371,15 @@ class Graph extends React.Component {
           
           );
       const options = {
+      
       animationEnabled: true,
+      backgroundColor: "transparent",
       theme: "light2",
       title: {
-        text: "Film Thickness"
+        
+        text: "Film Thickness",
+        background: 'transparent'
+       
       },
       axisX: {
         title: "spin speed (rpm)"

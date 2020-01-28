@@ -146,3 +146,20 @@ table tr.separator { height: 20px; }
     background-color: #28739E;
     border-bottom-color: #337DA8 ;
   }
+
+
+
+#cont:before {
+    position: fixed;
+    content: '';
+    background-image: url('./background-image.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.22;
+    /* background: rgba(0,0,0,0.5); */
+    min-height: 100%;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    pointer-events: none;
+}
