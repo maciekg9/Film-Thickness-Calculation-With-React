@@ -23,7 +23,8 @@
 	-moz-box-sizing: border-box; 
 	padding: 8px;
 	outline: none;
-	border: 1px solid #B0CFE0;
+  border: 1px solid rgb(127, 163, 182);
+  background: transparent;
 	-webkit-transition: all 0.30s ease-in-out;
 	-moz-transition: all 0.30s ease-in-out;
 	-ms-transition: all 0.30s ease-in-out;
@@ -40,7 +41,7 @@
 	width: 100%;
 }
 .form-style-9 ul li input.align-left{
-	float:left;
+  float:left;
 }
 .form-style-9 ul li input.align-right{
 	float:right;
@@ -162,4 +163,22 @@ table tr.separator { height: 20px; }
     height: auto;
     overflow: hidden;
     pointer-events: none;
+}
+
+.input-container {
+  position: relative;
+  width: 100%;
+  background: transparent;
+}
+#image1{
+  position:absolute;
+  right:53%;
+  top:3px;
+  cursor:pointer;
+}
+#image2{
+  position:absolute;
+  right:2%;
+  top:3px;
+  cursor:pointer;
 }

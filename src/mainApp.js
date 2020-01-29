@@ -1,19 +1,20 @@
 import React from 'react';
 import './App.css';
-import backgroundImage from './background-image.jpg'
 import CanvasJSReact from './canvasjs.react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import Tooltip from 'rc-tooltip';
+import 'rc-tooltip/assets/bootstrap.css';
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-
+    this.divRef = React.createRef()
     this.state = {
       concentration: '',
       minSpeed: '',
       maxSpeed: '',
-      poise: '',
+      initialSolutionViscosity: '',
       temperature: '',
       perfectGasConstant: '',
       kinematicViscosity: '',
@@ -24,8 +25,8 @@ class App extends React.Component {
       solventDiffusivity: '', 
       items: [],
       submit: false,
-      dropdownOpen: false,
-      isVisible: false
+      isShown: false
+ 
     }; 
   this.myChangeHandler = this.myChangeHandler.bind(this);
   this.mySubmitHandler = this.mySubmitHandler.bind(this);
@@ -34,42 +35,39 @@ class App extends React.Component {
   mySubmitHandler = (event) => {
     event.preventDefault();
     let items = [];
-
-    items.push(...Calculation(Number(this.state.concentration), Number(this.state.minSpeed), Number(this.state.maxSpeed), Number(this.state.poise), Number(this.state.temperature),
+    this.divRef.current.classList.remove("grid-item");
+    items.push(...Calculation(Number(this.state.concentration), Number(this.state.minSpeed), Number(this.state.maxSpeed), Number(this.state.initialSolutionViscosity), Number(this.state.temperature),
                               Number(this.state.perfectGasConstant), Number(this.state.kinematicViscosity), Number(this.state.schmidtConst), 
                               Number(this.state.liquidDensity), Number(this.state.molecularWeight), Number(this.state.vaporPressure), Number(this.state.solventDiffusivity)))    
     this.setState(function(){
       return {
         items: items,
-        concentration: '',
-        minSpeed: '',
-        maxSpeed: '',
-        poise: '',
-        temperature: '',
-        perfectGasConstant: '',
-        kinematicViscosity: '',
-        schmidtConst: '',
-        liquidDensity: '',
-        molecularWeight: '',
-        vaporPressure: '',
-        solventDiffusivity: '', 
         submit: true
       };
-
     });
-     
   };
 
   myChangeHandler = (event) => {
     const {name, value} = event.target;
+    const re = /^[0-9{1,2}{.}{\d{1-2}\b]+$/;
+    if (event.target.value === '' || re.test(event.target.value)) {
+    
     this.setState({[name]: value})
   }    
-  _handleClick(e) {
-    e.preventDefault();
-    this.setState({
-      isVisible: !this.state.isVisible
-    });
+}
+
+  onMouseEnter() {
+    this.setState({isShown: !this.state.isShown})
   }
+
+  onMouseLeave() {
+    this.setState({isShown: !this.state.isShown})
+  }
+
+  componentWillUnmount () {
+    this.table = this.table.destroy();
+  }
+
   selectCustomSolvent = (event) => {
     event.preventDefault();
     var dropdown = document.getElementById("select1");
@@ -79,7 +77,7 @@ class App extends React.Component {
         concentration: '5',
         minSpeed: '300',
         maxSpeed: '3000',
-        poise: '1',
+        initialSolutionViscosity: '1',
         temperature: '303',
         perfectGasConstant: '82.06',
         kinematicViscosity: '0.1553',
@@ -97,7 +95,7 @@ class App extends React.Component {
           concentration: '5',
           minSpeed: '300',
           maxSpeed: '3000',
-          poise: '1',
+          initialSolutionViscosity: '1',
           temperature: '303',
           perfectGasConstant: '82.06',
           kinematicViscosity: '0.1553',
@@ -115,7 +113,7 @@ class App extends React.Component {
           concentration: '5',
           minSpeed: '300',
           maxSpeed: '3000',
-          poise: '1',
+          initialSolutionViscosity: '1',
           temperature: '303',
           perfectGasConstant: '82.06',
           kinematicViscosity: '0.1553',
@@ -140,8 +138,8 @@ class App extends React.Component {
   }
   render() {
     
-    const {concentration, minSpeed, maxSpeed, poise, temperature, perfectGasConstant, kinematicViscosity,
-           schmidtConst, liquidDensity, molecularWeight, vaporPressure, solventDiffusivity, isVisible} = this.state;
+    const {concentration, minSpeed, maxSpeed, initialSolutionViscosity, temperature, perfectGasConstant, kinematicViscosity,
+           schmidtConst, liquidDensity, molecularWeight, vaporPressure, solventDiffusivity, isShown} = this.state;
 
     return (
       <div id='cont'>
@@ -164,26 +162,47 @@ class App extends React.Component {
 
           <p>Spin coating initial values</p>
           <li>
-        <input
+            <div className="input-container">
+            <Tooltip placement="right" trigger={['hover']}
+             mouseLeaveDelay="0.3" animation="zoom" 
+             overlay={<span>Polymer concentration <br></br> [wt%]</span>}>
+            <img id="image1" src="https://img.icons8.com/small/16/000000/help.png"
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>        <input
         className='field-style field-split align-left'
-        placeholder="Solvent's Concentration"
+        placeholder="Polymer Concentration"
         type='text'
         name='concentration'
         value={concentration}
         onChange={this.myChangeHandler}
         />
 
-        <input
+ </div>
+ <div className="input-container">
+     <Tooltip placement="right" trigger={['hover']} 
+      mouseLeaveDelay="0.3" animation="zoom" 
+      overlay={<span>Initial solution viscosity <br></br>[poise]</span>}>
+            <img id="image2" src="https://img.icons8.com/small/16/000000/help.png" 
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>        <input
         className="field-style field-split align-right"
-        placeholder='Poise number'
+        placeholder='initial solution viscosity'
         type='text'
-        name='poise'
-        value={poise}
+        name='initialSolutionViscosity'
+        value={initialSolutionViscosity}
         onChange={this.myChangeHandler}
         />
+         </div>
+
         </li>
         <li>
-        <input
+        <div className="input-container">
+        <Tooltip placement="right" trigger={['hover']}
+         mouseLeaveDelay="0.3" animation="zoom" 
+         overlay={<span>Minimum spin speed <br></br> [rpm]</span>}>
+            <img id="image1" src="https://img.icons8.com/small/16/000000/help.png" 
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>        <input
         className="field-style field-split align-left"
         placeholder='Min Speed'
         type='text'
@@ -191,7 +210,14 @@ class App extends React.Component {
         value={minSpeed}
         onChange={this.myChangeHandler}
         />
-        <input
+                 </div>
+                 <div className="input-container">
+                 <Tooltip placement="right" trigger={['hover']} 
+                 mouseLeaveDelay="0.3" animation="zoom" 
+                 overlay={<span>Maximum spin speed <br></br> [rpm]</span>}>
+            <img id="image2" src="https://img.icons8.com/small/16/000000/help.png" 
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>        <input
         className="field-style field-split align-right"
         placeholder='Maximum Speed'
         type='text'
@@ -199,10 +225,18 @@ class App extends React.Component {
         value={maxSpeed}
         onChange={this.myChangeHandler}
         />
+                         </div>
+
         </li>
         <p>Polymer values</p>
         <li>
-        <input
+        <div className="input-container">
+        <Tooltip placement="right" trigger={['hover']} 
+        mouseLeaveDelay="0.3" animation="zoom" 
+        overlay={<span>Temperature <br></br> [K]</span>}>
+            <img id="image1" src="https://img.icons8.com/small/16/000000/help.png" 
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>        <input
         className="field-style field-split align-left"
         placeholder='Temperature'
         type='text'
@@ -210,7 +244,14 @@ class App extends React.Component {
         value={temperature}
         onChange={this.myChangeHandler}
         />
-        <input
+        </div>
+        <div className="input-container">
+        <Tooltip placement="right" trigger={['hover']}
+         mouseLeaveDelay="0.3" animation="zoom"
+          overlay={<span>Perfect gas constant <br></br> [atm * cm^3 / (mol * K)] </span>}>
+            <img id="image2" src="https://img.icons8.com/small/16/000000/help.png" 
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>        <input
         className="field-style field-split align-right"
         placeholder='Perfect gas constant'
         type='text'
@@ -218,8 +259,18 @@ class App extends React.Component {
         value={perfectGasConstant}
         onChange={this.myChangeHandler}
         />
+        </div>
+
         </li>
         <li>
+        <div className="input-container">
+        <Tooltip placement="right" trigger={['hover']} 
+        mouseLeaveDelay="0.3" animation="zoom"
+         overlay={<span>kinematic viscosity of the peak gas phase <br></br> [cm^2 / s]</span>}>
+            <img id="image1" src="https://img.icons8.com/small/16/000000/help.png" 
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>
+
         <input
         className="field-style field-split align-left"
         placeholder='Kinematic viscosity'
@@ -228,7 +279,17 @@ class App extends React.Component {
         value={kinematicViscosity}
         onChange={this.myChangeHandler}
         />
-        <input
+        
+
+        </div>
+        
+        <div className="input-container">
+        <Tooltip placement="right" trigger={['hover']} 
+        mouseLeaveDelay="0.3" animation="zoom"
+         overlay={<span>Constant depending on Schmidt's number <br></br> [-]</span>}>
+            <img id="image2" src="https://img.icons8.com/small/16/000000/help.png" 
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>        <input
         className="field-style field-split align-right"
         placeholder="Const dependent on Schmidt's number"
         type='text'
@@ -236,10 +297,17 @@ class App extends React.Component {
         value={schmidtConst}
         onChange={this.myChangeHandler}
         />
+        </div>
         </li>
         <p>Solvent values</p>
         <li>
-        <input
+        <div className="input-container">
+        <Tooltip placement="right" trigger={['hover']}
+         mouseLeaveDelay="0.3" animation="zoom"
+          overlay={<span>Liquid density <br></br> [g / cm^3]</span>}>
+            <img id="image1" src="https://img.icons8.com/small/16/000000/help.png" 
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>        <input
         className="field-style field-split align-left"
         placeholder='Liquid Density'
         type='text'
@@ -247,7 +315,14 @@ class App extends React.Component {
         value={liquidDensity}
         onChange={this.myChangeHandler}
         />
-        <input
+        </div>
+        <div className="input-container">
+        <Tooltip placement="right" trigger={['hover']}
+         mouseLeaveDelay="0.3" animation="zoom"
+          overlay={<span>Molecular weight of the solvent <br></br> [g/mol]</span>}>
+            <img id="image2" src="https://img.icons8.com/small/16/000000/help.png" 
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>        <input
         className="field-style field-split align-right"
         placeholder='Molecular weight of the solvent'
         type='text'
@@ -255,9 +330,16 @@ class App extends React.Component {
         value={molecularWeight}
         onChange={this.myChangeHandler}
         />
+        </div>
         </li>
         <li>
-        <input
+        <div className="input-container">
+        <Tooltip placement="right" trigger={['hover']}
+         mouseLeaveDelay="0.3" animation="zoom"
+          overlay={<span>Pure solvent vapor pressure <br></br> [atm]</span>}>
+            <img id="image1" src="https://img.icons8.com/small/16/000000/help.png" 
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>        <input
         className="field-style field-split align-left"
         placeholder='Pure solvent vapor pressure'
         type='text'
@@ -265,7 +347,14 @@ class App extends React.Component {
         value={vaporPressure}
         onChange={this.myChangeHandler}
         />
-        <input
+        </div>
+        <div className="input-container">
+        <Tooltip placement="right" trigger={['hover']}
+         mouseLeaveDelay="0.3" animation="zoom"
+          overlay={<span>Binary solvent diffusivity in the peak gas phase <br></br> [cm^2 / s]</span>}>
+            <img id="image2" src="https://img.icons8.com/small/16/000000/help.png" 
+            onMouseEnter={() => this.onMouseEnter()} onMouseLeave={() => this.onMouseLeave()}/>
+        </Tooltip>        <input
         className="field-style field-split align-right"
         placeholder='Binary solvent diffusivity'
         type='text'
@@ -273,19 +362,20 @@ class App extends React.Component {
         value={solventDiffusivity}
         onChange={this.myChangeHandler}
         />
+        </div>
         </li>
         <li>
       <input
-      type='submit'
+      type='submit' value="Calculate"
       />
       </li>
       </ul>
       </form>
       </div>
-      <div className="grid-item">
+      <div className="grid-item" id="resultsTable" ref={this.divRef}>
       {this.state.submit && <Table items={ this.state.items }/>}
       </div>
-      <div  style={{gridColumn:'1/-1'}}>
+      <div  style={{gridColumn:'1/-1'}} id="resultsGraph">
       {this.state.submit && <Graph items={this.state.items} />}  
       </div>
 
@@ -406,7 +496,7 @@ class Graph extends React.Component {
 export default App;
 
 
-function getLayerThickness (concentration, speed, poise, temperature, perfectGasConstant, 
+function getLayerThickness (concentration, speed, initialSolutionViscosity, temperature, perfectGasConstant, 
   kinematicViscosity, schmidtConst, liquidDensity, molecularWeight, vaporPressure, solventDiffusivity ) {
 
   //polymer variables
@@ -430,15 +520,15 @@ function getLayerThickness (concentration, speed, poise, temperature, perfectGas
   var x10 = 1.0 - concentration / 100.0;
 
   // equation 4
-  var hw  = Math.pow(((3.0 * poise) / (2.0 * rho * w * w)) * k * (x10 - xlinf), 0.3333);
+  var hw  = Math.pow(((3.0 * initialSolutionViscosity) / (2.0 * rho * w * w)) * k * (x10 - xlinf), 0.3333);
 
   var finalResult = (Math.round(((1.0 - x10) * hw * 10000000) * 100) / 100).toFixed(2);
 
   return finalResult;
-
+  
 }
 
-function Calculation (concentration, minSpeed, maxSpeed, poise, temperature, perfectGasConstant, 
+function Calculation (concentration, minSpeed, maxSpeed, initialSolutionViscosity, temperature, perfectGasConstant, 
   kinematicViscosity, schmidtConst, liquidDensity, molecularWeight, vaporPressure, solventDiffusivity) {
   var tmpArr = [], // Temporary 1-dimensional array to hold all values
   arr = [], // The final 2-dimensional array
@@ -449,7 +539,7 @@ function Calculation (concentration, minSpeed, maxSpeed, poise, temperature, per
 // Fill temporary array with "N"s
 for (var i = 0; i < rows * cols; i += 1) {
   tmpArr.push(Math.round(currentSpeed));
-  tmpArr.push(getLayerThickness(concentration, currentSpeed, poise, temperature, perfectGasConstant, 
+  tmpArr.push(getLayerThickness(concentration, currentSpeed, initialSolutionViscosity, temperature, perfectGasConstant, 
     kinematicViscosity, schmidtConst, liquidDensity, molecularWeight, vaporPressure, solventDiffusivity));
   currentSpeed += spin;
 }
